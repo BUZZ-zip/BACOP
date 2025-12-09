@@ -14,7 +14,7 @@ GREEN = '\033[92m'
 ORANGE = '\033[93m'
 RESET = '\033[0m'
 
-def check_file(file_path, local_root, target_url, match_codes, filter_content, filter_size):
+def check_file(file_path, local_root, target_url, match_codes, filter_content, filter_size, user_agent):
     # Construct relative path
     rel_path = os.path.relpath(file_path, local_root)
     # Ensure forward slashes for URL
@@ -24,7 +24,7 @@ def check_file(file_path, local_root, target_url, match_codes, filter_content, f
     full_url = f"{target_url.rstrip('/')}/{rel_path}"
     
     headers = {
-        'User-Agent': 'YesWeHack-SLCC999'
+        'User-Agent': user_agent
     }
     
     try:
@@ -68,6 +68,7 @@ def main():
     parser.add_argument("-d", "--dir", required=True, help="Local directory source (e.g., /path/to/source)")
     parser.add_argument("-fc", "--filter-content", nargs='+', help="List of strings to exclude if found in response text (e.g. 'Access Denied' 'Login')")
     parser.add_argument("-fs", "--filter-size", nargs='+', type=int, help="List of response sizes to exclude (e.g. 0 123)")
+    parser.add_argument("-ua", "--user-agent", default="YesWeHack-SLCC999", help="User-Agent string to use (default: YesWeHack-SLCC999)")
     parser.add_argument("-mc", "--match-codes", nargs='+', type=int, default=[200], help="List of status codes to report (default: 200)")
 
     args = parser.parse_args()
@@ -91,7 +92,7 @@ def main():
         for root, dirs, files in os.walk(local_dir):
             for file in files:
                 file_path = os.path.join(root, file)
-                check_file(file_path, local_dir, target_url, args.match_codes, args.filter_content, args.filter_size)
+                check_file(file_path, local_dir, target_url, args.match_codes, args.filter_content, args.filter_size, args.user_agent)
     except KeyboardInterrupt:
         print("\nScan interrupted by user.")
         sys.exit(0)
